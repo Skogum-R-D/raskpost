@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  phone             String?
+  role              Role      @default(SENDER)
+  stripeAccountId   String?
+  stripeCustomerId  String?
+  createdAt         DateTime  @default(now())
+
+  jobsPosted        Job[]     @relation("Sender")
+  jobsClaimed       Job[]     @relation("Driver")
+  ratings           Rating[]  @relation("RatedUser")
+  ratingsGiven      Rating[]  @relation("Rater")
+}
+
+model Job {
+  id              String      @id @default(cuid())
+  title           String
+  description     String?
+  status          JobStatus   @default(OPEN)
+
+  pickupAddress   String
+  pickupLat       Float
+  pickupLng       Float
+  dropoffAddress  String
+  dropoffLat      Float
+  dropoffLng      Float
+
+  packageSize     PackageSize
+  weightKg        Float?
+  pricNok         Int
+
+  senderId        String
+  sender          User        @relation("Sender", fields: [senderId], references: [id])
+  driverId        String?
+  driver          User?       @relation("Driver", fields: [driverId], references: [id])
+
+  stripePaymentId String?
+  paidAt          DateTime?
+  claimedAt       DateTime?
+  pickedUpAt      DateTime?
+  deliveredAt     DateTime?
+  createdAt       DateTime    @default(now())
+
+  tracking        TrackingPoint[]
+  rating          Rating?
+}
+
+model TrackingPoint {
+  id        String   @id @default(cuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+  lat       Float
+  lng       Float
+  timestamp DateTime @default(now())
+}
+
+model Rating {
+  id          String   @id @default(cuid())
+  jobId       String   @unique
+  job         Job      @relation(fields: [jobId], references: [id])
+  raterId     String
+  rater       User     @relation("Rater", fields: [raterId], references: [id])
+  ratedUserId String
+  ratedUser   User     @relation("RatedUser", fields: [ratedUserId], references: [id])
+  score       Int
+  comment     String?
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  SENDER
+  DRIVER
+  ADMIN
+}
+
+enum JobStatus {
+  OPEN
+  CLAIMED
+  PICKED_UP
+  DELIVERED
+  CANCELLED
+}
+
+enum PackageSize {
+  SMALL
+  MEDIUM
+  LARGE
+  EXTRA_LARGE
+}
