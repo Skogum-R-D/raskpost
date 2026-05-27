@@ -29,6 +29,7 @@ services:
 
   migrate:
     build: .
+    image: raskpost:latest
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/raskpost
     command: npx prisma db push --skip-generate
@@ -38,7 +39,7 @@ services:
     restart: on-failure
 
   app:
-    build: .
+    image: raskpost:latest
     restart: unless-stopped
     ports:
       - "3000:3000"

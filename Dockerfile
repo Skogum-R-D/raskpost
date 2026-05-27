@@ -1,12 +1,17 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
+COPY prisma ./prisma
+# NODE_TLS_REJECT_UNAUTHORIZED=0 works around Podman VM SSL cert issues at build time
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 RUN npm ci
 
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
