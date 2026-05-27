@@ -28,11 +28,12 @@ services:
       retries: 10
 
   migrate:
-    build: .
-    image: raskpost:latest
+    build:
+      context: .
+      target: migrate
+    image: raskpost-migrate:latest
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/raskpost
-    command: npx prisma db push --skip-generate
     depends_on:
       db:
         condition: service_healthy
