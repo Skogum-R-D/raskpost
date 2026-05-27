@@ -1,65 +1,63 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
-export default function Home() {
+const steps = [
+  { icon: "📦", title: "Legg ut pakken", desc: "Fyll inn hente- og leveringsadresse, pakkestørrelse og pris du tilbyr." },
+  { icon: "🚗", title: "En sjåfør tar oppdraget", desc: "Tilgjengelige sjåfører i nærheten ser oppdraget og reserverer det." },
+  { icon: "⚡", title: "Levert på timer", desc: "Sjåføren henter og leverer — du sporer i sanntid." },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* Hero */}
+      <section className="bg-white border-b border-slate-200">
+        <div className="mx-auto max-w-4xl px-4 py-24 text-center">
+          <span className="inline-block rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600 mb-6">
+            Raskere enn posten — alltid
+          </span>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            Få pakken levert{" "}
+            <span className="text-orange-500">i dag</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-5 text-lg text-slate-500 max-w-xl mx-auto">
+            Post et leveringsoppdrag og la en sjåfør i nærheten ta det. Ingen venting på Posten — levering på timer, ikke dager.
           </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/jobs/new">
+              <Button size="lg">Legg ut pakke nå</Button>
+            </Link>
+            <Link href="/jobs">
+              <Button size="lg" variant="ghost">Se ledige oppdrag</Button>
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* How it works */}
+      <section className="mx-auto max-w-4xl px-4 py-20">
+        <h2 className="text-center text-2xl font-bold text-slate-900 mb-12">Slik fungerer det</h2>
+        <div className="grid gap-8 sm:grid-cols-3">
+          {steps.map((step, i) => (
+            <div key={i} className="text-center">
+              <div className="text-4xl mb-4">{step.icon}</div>
+              <h3 className="font-semibold text-slate-900 mb-2">{step.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
+            </div>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* CTA band */}
+      <section className="bg-slate-900 text-white">
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">
+          <h2 className="text-2xl font-bold mb-3">Er du sjåfør?</h2>
+          <p className="text-slate-400 mb-6">Tjen penger på kjøreturer du allerede gjør. Se ledige oppdrag i nærheten og velg selv.</p>
+          <Link href="/jobs">
+            <Button variant="secondary" size="lg">Se ledige oppdrag</Button>
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }
