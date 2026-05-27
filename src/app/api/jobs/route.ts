@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@auth";
 import { db } from "@/lib/db";
 import { PackageSize } from "@/types";
 
@@ -17,9 +18,13 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Ikke innlogget" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
-
     const { title, description, pickupAddress, pickupLat, pickupLng, dropoffAddress, dropoffLat, dropoffLng, packageSize, weightKg, pricNok } = body;
 
     if (!title || !pickupAddress || !dropoffAddress || !packageSize || !pricNok) {
@@ -29,14 +34,6 @@ export async function POST(req: NextRequest) {
     const validSizes: PackageSize[] = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
     if (!validSizes.includes(packageSize)) {
       return NextResponse.json({ error: "Ugyldig pakkestørrelse" }, { status: 400 });
-    }
-
-    // TODO: replace with session user id once auth is wired up
-    let sender = await db.user.findFirst({ where: { email: "demo@raskpost.no" } });
-    if (!sender) {
-      sender = await db.user.create({
-        data: { name: "Demo bruker", email: "demo@raskpost.no", role: "SENDER" },
-      });
     }
 
     const job = await db.job.create({
@@ -52,7 +49,7 @@ export async function POST(req: NextRequest) {
         packageSize,
         weightKg: weightKg ?? null,
         pricNok: Number(pricNok),
-        senderId: sender.id,
+        senderId: session.user.id,
       },
     });
 
